@@ -1,0 +1,128 @@
+{
+  "summary": {
+    "repo": "boltons",
+    "commits_attempted": 6,
+    "commits_completed": 6,
+    "errors": [],
+    "functions_adjudicated": 268,
+    "abstained": 0,
+    "abstention_rate": 0.0,
+    "changed_total": 2,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 7.9,
+    "max_seconds": 144.0
+  },
+  "commits": [
+    {
+      "sha": "78ec69cac4",
+      "seconds": 0.4,
+      "error": null,
+      "subject": "bump version to 26.2.1dev",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "4332b35a27",
+      "seconds": 0.4,
+      "error": null,
+      "subject": "boltons version 26.2.0",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "1216b467c1",
+      "seconds": 144.0,
+      "error": null,
+      "subject": "Complete September PR sweep for 26.2.0 (#481)",
+      "total": 193,
+      "changed": 1,
+      "no_change": 192,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "boltons/cacheutils.py::ThresholdCounter.most_common",
+          "witness": {
+            "args": [
+              "ThresholdCounter()",
+              ".most_common('')"
+            ],
+            "before": "['val', '[]']",
+            "after": "['exc', 'TypeError']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "73e22c90de",
+      "seconds": 12.3,
+      "error": null,
+      "subject": "statsutils: finish Pearson zero-denominator review and regression coverage",
+      "total": 34,
+      "changed": 0,
+      "no_change": 34,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "1cdc0e9d36",
+      "seconds": 7.9,
+      "error": null,
+      "subject": "statsutils: handle zero interquartile range in histograms (#467)",
+      "total": 34,
+      "changed": 0,
+      "no_change": 34,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "5150802911",
+      "seconds": 4.7,
+      "error": null,
+      "subject": "jsonutils: accept explicit end-of-file relative seek (#465)",
+      "total": 7,
+      "changed": 1,
+      "no_change": 6,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "boltons/jsonutils.py::JSONLIterator.__init__",
+          "witness": {
+            "args": [
+              "JSONLIterator([])",
+              ".__init__([], [], 1e-09, True)"
+            ],
+            "before": "['exc', 'ValueError']",
+            "after": "['exc', 'AttributeError']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

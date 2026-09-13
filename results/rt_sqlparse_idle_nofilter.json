@@ -1,0 +1,433 @@
+{
+  "summary": {
+    "repo": "sqlparse",
+    "commits_attempted": 8,
+    "commits_completed": 8,
+    "errors": [],
+    "functions_adjudicated": 230,
+    "abstained": 18,
+    "abstention_rate": 7.8,
+    "changed_total": 53,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 11.4,
+    "max_seconds": 90.8
+  },
+  "commits": [
+    {
+      "sha": "60cdc64972",
+      "seconds": 3.2,
+      "error": null,
+      "subject": "Back to development mode.",
+      "total": 4,
+      "changed": 0,
+      "no_change": 4,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "2f40da99b5",
+      "seconds": 2.6,
+      "error": null,
+      "subject": "Update version number.",
+      "total": 4,
+      "changed": 0,
+      "no_change": 4,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b9588d973a",
+      "seconds": 1.0,
+      "error": null,
+      "subject": "Unify the benchmark scripts on a shared harness",
+      "total": 29,
+      "changed": 27,
+      "no_change": 0,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "import failed: AttributeError: module 'signal' has no attribute 'SIGAL",
+          2
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::main (moved)",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/_harness.py::_exponent",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/_harness.py::_format_size",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/_harness.py::_parse_args",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/_harness.py::run_vector",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::make_comment_payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::make_dollar_quote_payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::run_scaling",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_group_comments.py::comment_only_statement",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_grouping.py::_alarm_handler",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_grouping.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_grouping.py::nested_case_when",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_grouping.py::nested_parentheses",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_grouping.py::wide_column_list",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_lexer_delimiters.py::unclosed_comments",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_lexer_delimiters.py::unmatched_dollar_quotes",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::_alarm_handler",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::in_tuple_list",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::in_tuple_list_sql",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::reindent",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::values_list",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::values_list_sql",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::classify",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::run",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "519e41698a",
+      "seconds": 57.4,
+      "error": null,
+      "subject": "Pair comment/dollar-quote delimiters at the lexer position",
+      "total": 46,
+      "changed": 5,
+      "no_change": 40,
+      "abstained": 1,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          1
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "sqlparse/keywords.py::DelimitedSpans.__init__",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/keywords.py::DelimitedSpans.resolve",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/keywords.py::find_delimited_spans",
+          "witness": {
+            "args": [
+              "'\"(\"\"|\\\\\\\\\"|[^\"])*\"'"
+            ],
+            "before": "['val', '{}']",
+            "after": "['opaque', 'DelimitedSpans']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/utils.py::resolve_paired_delimiters",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "tests/test_tokenize.py::test_delimiters_in_strings_and_comments",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "a51df6d9e2",
+      "seconds": 11.4,
+      "error": null,
+      "subject": "Measure reindent offsets backwards to avoid quadratic CPU use",
+      "total": 22,
+      "changed": 7,
+      "no_change": 15,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "benchmarks/bench_reindent_offset.py::_alarm_handler",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::in_tuple_list_sql",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_reindent_offset.py::values_list_sql",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._current_line_len",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._flatten_up_to_token",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._get_offset",
+          "witness": {
+            "args": [
+              "ReindentFilter()",
+              "._get_offset(None)"
+            ],
+            "before": "['exc', 'AttributeError']",
+            "after": "['val', '0']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "d1d8060274",
+      "seconds": 10.4,
+      "error": null,
+      "subject": "Fix uncontrolled CPU consumption (ReDoS) in the lexer's handling of dollar-quoted literals",
+      "total": 22,
+      "changed": 7,
+      "no_change": 15,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::_alarm_handler",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::make_comment_payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::make_dollar_quote_payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/bench_dollar_quote_redos.py::run_scaling",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/keywords.py::find_delimited_spans",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/utils.py::resolve_paired_delimiters",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "ef2012a5ee",
+      "seconds": 36.2,
+      "error": null,
+      "subject": "Fix quadratic DoS in group_comments (GHSA-f2ff-p2ww-7p4p)",
+      "total": 33,
+      "changed": 5,
+      "no_change": 28,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::classify",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::main",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::measure",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::payload",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "benchmarks/validate_group_comments_dos.py::run",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "53ff44b53e",
+      "seconds": 90.8,
+      "error": null,
+      "subject": "Escape backslashes in output formatters.",
+      "total": 70,
+      "changed": 2,
+      "no_change": 53,
+      "abstained": 15,
+      "abstain_reasons": [
+        [
+          "killed at the 30s wall clock",
+          14
+        ],
+        [
+          "differs from itself across processes",
+          1
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "tests/test_format.py::TestOutputFormat.test_php_escapes_backslashes",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "tests/test_format.py::TestOutputFormat.test_python_escapes_backslashes",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

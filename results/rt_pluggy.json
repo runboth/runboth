@@ -1,0 +1,230 @@
+{
+  "summary": {
+    "repo": "pluggy",
+    "commits_attempted": 6,
+    "commits_completed": 6,
+    "errors": [],
+    "functions_adjudicated": 157,
+    "abstained": 10,
+    "abstention_rate": 6.4,
+    "changed_total": 13,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 33.5,
+    "max_seconds": 39.4
+  },
+  "commits": [
+    {
+      "sha": "aa6e1f43a2",
+      "seconds": 34.8,
+      "error": null,
+      "subject": "Do not bind callables stored on the plugin instance",
+      "total": 34,
+      "changed": 4,
+      "no_change": 28,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "src/pluggy/_manager.py::_get_hookable",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_hook_marker_holder",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_instance_dict",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_static_hook_attr",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "21186ba2b7",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "lint: adapt tests to newer ruff after rebase onto main",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "c1c39fee94",
+      "seconds": 33.5,
+      "error": null,
+      "subject": "Discover hooks via inspect.getattr_static instead of getattr",
+      "total": 33,
+      "changed": 7,
+      "no_change": 24,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "src/pluggy/_manager.py::PluginManager.add_hookspecs",
+          "witness": {
+            "args": [
+              "PluginManager(0)",
+              ".add_hookspecs(-2)"
+            ],
+            "before": "['exc', 'TypeError']",
+            "after": "['exc', 'ValueError']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::PluginManager.parse_hookimpl_opts",
+          "witness": {
+            "args": [
+              "PluginManager('example')",
+              ".parse_hookimpl_opts(-6, 2)"
+            ],
+            "before": "['exc', 'TypeError']",
+            "after": "['val', 'None']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::PluginManager.parse_hookspec_opts",
+          "witness": {
+            "args": [
+              "PluginManager('example')",
+              ".parse_hookspec_opts(-6, 2)"
+            ],
+            "before": "['exc', 'TypeError']",
+            "after": "['val', 'None']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_attr_is_property",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_get_hookable",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_get_marker_opts",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::_hook_marker_holder",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "09676eef59",
+      "seconds": 26.9,
+      "error": null,
+      "subject": "Address review: soften AttributeError comments and add descriptor test",
+      "total": 30,
+      "changed": 0,
+      "no_change": 28,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b2e3e23f72",
+      "seconds": 32.8,
+      "error": null,
+      "subject": "Return None instead of falling back to getattr(type(plugin))",
+      "total": 30,
+      "changed": 2,
+      "no_change": 26,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "src/pluggy/_manager.py::PluginManager.parse_hookimpl_opts",
+          "witness": {
+            "args": [
+              "PluginManager(-1)",
+              ".parse_hookimpl_opts(-2, '\\n')"
+            ],
+            "before": "['exc', 'AttributeError']",
+            "after": "['val', 'None']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/pluggy/_manager.py::PluginManager.parse_hookspec_opts",
+          "witness": {
+            "args": [
+              "PluginManager(-1)",
+              ".parse_hookspec_opts(-2, '\\n')"
+            ],
+            "before": "['exc', 'AttributeError']",
+            "after": "['val', 'None']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "c2899cceea",
+      "seconds": 39.4,
+      "error": null,
+      "subject": "swap _attr_is_property arg Any type to object type",
+      "total": 30,
+      "changed": 0,
+      "no_change": 28,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

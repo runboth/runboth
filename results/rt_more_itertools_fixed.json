@@ -1,0 +1,221 @@
+{
+  "summary": {
+    "repo": "more-itertools",
+    "commits_attempted": 8,
+    "commits_completed": 8,
+    "errors": [],
+    "functions_adjudicated": 843,
+    "abstained": 37,
+    "abstention_rate": 4.4,
+    "changed_total": 6,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 102.5,
+    "max_seconds": 199.1
+  },
+  "commits": [
+    {
+      "sha": "87d12578c3",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "test invalid and one-item batch count limits",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "d032cab779",
+      "seconds": 199.1,
+      "error": null,
+      "subject": "fix nonpositive item limits in constrained_batches",
+      "total": 193,
+      "changed": 1,
+      "no_change": 183,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "more_itertools/more.py::constrained_batches",
+          "witness": {
+            "args": [
+              "-100",
+              "1",
+              "-100",
+              "True",
+              "[]"
+            ],
+            "before": "['lazy', [['exc', 'TypeError']]]",
+            "after": "['lazy', [['exc', 'ValueError']]]"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "0e6dce3a7a",
+      "seconds": 177.0,
+      "error": null,
+      "subject": "Clarify `combination_with_replacement_index` a bit",
+      "total": 193,
+      "changed": 0,
+      "no_change": 184,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "069b110038",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "Add @jokrasno's test cases",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "1b74b56d03",
+      "seconds": 120.4,
+      "error": null,
+      "subject": "Fix/simplify `combination_with_replacement_index`",
+      "total": 193,
+      "changed": 1,
+      "no_change": 183,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "more_itertools/more.py::combination_with_replacement_index",
+          "witness": {
+            "args": [
+              "[]",
+              "False"
+            ],
+            "before": "['val', '0']",
+            "after": "['exc', 'TypeError']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b8e0cbb8ed",
+      "seconds": 48.7,
+      "error": null,
+      "subject": "Add missing word in docstring",
+      "total": 67,
+      "changed": 0,
+      "no_change": 66,
+      "abstained": 1,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "37f99c53a9",
+      "seconds": 0.1,
+      "error": null,
+      "subject": "Appease the formatter",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "ddd678209d",
+      "seconds": 102.5,
+      "error": null,
+      "subject": "Thinner API with only random_ordered_range()",
+      "total": 197,
+      "changed": 4,
+      "no_change": 184,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "more_itertools/more.py::random_ordered_combinations",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "more_itertools/more.py::random_ordered_combs_with_replacement",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "more_itertools/more.py::random_ordered_permutations",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "more_itertools/more.py::random_ordered_product",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+*.pyc
+__pycache__/
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Credentials, before they are ever near a commit. `git add -A` swept a freshly downloaded
+# PyPI recovery-codes file into a commit once; it was caught before the push, and the rule now
+# is that these patterns exist in the ignore file before any such file exists on disk.
+.env
+.env.*
+*.pem
+*.p12
+credentials.json
+*Recovery-Codes*.txt
+.pypirc

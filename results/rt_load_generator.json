@@ -1,0 +1,109 @@
+{
+  "summary": {
+    "repo": "more-itertools",
+    "commits_attempted": 4,
+    "commits_completed": 2,
+    "errors": [
+      {
+        "sha": "87d12578c3",
+        "seconds": 700.0,
+        "error": "TIMEOUT",
+        "subject": "test invalid and one-item batch count limits",
+        "stderr_tail": ""
+      },
+      {
+        "sha": "069b110038",
+        "seconds": 700.0,
+        "error": "TIMEOUT",
+        "subject": "Add @jokrasno's test cases",
+        "stderr_tail": ""
+      }
+    ],
+    "functions_adjudicated": 386,
+    "abstained": 18,
+    "abstention_rate": 4.7,
+    "changed_total": 1,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 154.7,
+    "max_seconds": 154.7
+  },
+  "commits": [
+    {
+      "sha": "87d12578c3",
+      "seconds": 700.0,
+      "error": "TIMEOUT",
+      "subject": "test invalid and one-item batch count limits",
+      "stderr_tail": ""
+    },
+    {
+      "sha": "d032cab779",
+      "seconds": 101.9,
+      "error": null,
+      "subject": "fix nonpositive item limits in constrained_batches",
+      "total": 193,
+      "changed": 1,
+      "no_change": 183,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "more_itertools/more.py::constrained_batches",
+          "witness": {
+            "args": [
+              "-100",
+              "1",
+              "-100",
+              "True",
+              "[]"
+            ],
+            "before": "['lazy', [['exc', 'TypeError']]]",
+            "after": "['lazy', [['exc', 'ValueError']]]"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "0e6dce3a7a",
+      "seconds": 154.7,
+      "error": null,
+      "subject": "Clarify `combination_with_replacement_index` a bit",
+      "total": 193,
+      "changed": 0,
+      "no_change": 184,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "numeric_range",
+          6
+        ],
+        [
+          "differs from itself across processes",
+          3
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "069b110038",
+      "seconds": 700.0,
+      "error": "TIMEOUT",
+      "subject": "Add @jokrasno's test cases",
+      "stderr_tail": ""
+    }
+  ]
+}

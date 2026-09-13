@@ -1,0 +1,117 @@
+{
+  "summary": {
+    "repo": "arrow",
+    "commits_attempted": 6,
+    "commits_completed": 6,
+    "errors": [],
+    "functions_adjudicated": 283,
+    "abstained": 4,
+    "abstention_rate": 1.4,
+    "changed_total": 0,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 118.0,
+    "max_seconds": 142.5
+  },
+  "commits": [
+    {
+      "sha": "2224255c4a",
+      "seconds": 133.5,
+      "error": null,
+      "subject": "Revert \"Fix humanize reporting \"a month\" for 16-day differences (#1240) (#1242)\" (#1264)",
+      "total": 68,
+      "changed": 0,
+      "no_change": 67,
+      "abstained": 1,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b423717da8",
+      "seconds": 142.5,
+      "error": null,
+      "subject": "Fix humanize reporting \"a month\" for 16-day differences (#1240) (#1242)",
+      "total": 68,
+      "changed": 0,
+      "no_change": 67,
+      "abstained": 1,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b247ad073d",
+      "seconds": 76.2,
+      "error": null,
+      "subject": "Added weeks to afrikaans locale (#1234)",
+      "total": 64,
+      "changed": 0,
+      "no_change": 64,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "598b72a301",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "Add Locale Tests (#1236)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "6c4e0db819",
+      "seconds": 118.0,
+      "error": null,
+      "subject": "Fix linting",
+      "total": 83,
+      "changed": 0,
+      "no_change": 81,
+      "abstained": 2,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          2
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "c61de92997",
+      "seconds": 0.3,
+      "error": null,
+      "subject": "Bump version and add changelog (#1228)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "summary": {
+    "repo": "packaging",
+    "commits_attempted": 6,
+    "commits_completed": 6,
+    "errors": [],
+    "functions_adjudicated": 78,
+    "abstained": 4,
+    "abstention_rate": 5.1,
+    "changed_total": 4,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 1,
+    "median_seconds": 0.2,
+    "max_seconds": 50.6
+  },
+  "commits": [
+    {
+      "sha": "de7d962e83",
+      "seconds": 0.1,
+      "error": null,
+      "subject": "ci(downstream): bump twine to 7.0.0, deselect readme_renderer 46 test (#1400)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b9d249f585",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "perf(tests): disable more unused pytest plugins (#1390)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "053c884615",
+      "seconds": 42.3,
+      "error": null,
+      "subject": "tags: add interpreter_abi (#611)",
+      "total": 40,
+      "changed": 2,
+      "no_change": 34,
+      "abstained": 4,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          4
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "src/packaging/tags.py::__dir__",
+          "witness": {
+            "args": [],
+            "before": "['val', \"['INTERPRETER_SHORT_NAMES', 'AppleVersion', 'InvalidTag', 'PythonVersion', 'Tag', 'TooManyTagsError', 'UnsortedTagsError', 'android_platforms', 'compatible_tags', 'cpython_tags', 'create_compatible_tags_selector', 'generic_tags', 'interpreter_name', 'interpreter_version', 'ios_platforms', 'mac_platforms', 'parse_tag', 'platform_tags', 'pure_python_tags', 'sys_tags']\"]",
+            "after": "['val', \"['INTERPRETER_SHORT_NAMES', 'AppleVersion', 'InvalidTag', 'PythonVersion', 'Tag', 'TooManyTagsError', 'UnsortedTagsError', 'android_platforms', 'compatible_tags', 'cpython_tags', 'create_compatible_tags_selector', 'generic_tags', 'interpreter_abi', 'interpreter_name', 'interpreter_version', 'ios_platforms', 'mac_platforms', 'parse_tag', 'platform_tags', 'pure_python_tags', 'sys_tags']\"]"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/packaging/tags.py::interpreter_abi",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": [
+        {
+          "function": "src/packaging/tags.py::__dir__",
+          "witness": {
+            "args": [],
+            "before": "['val', \"['INTERPRETER_SHORT_NAMES', 'AppleVersion', 'InvalidTag', 'PythonVersion', 'Tag', 'TooManyTagsError', 'UnsortedTagsError', 'android_platforms', 'compatible_tags', 'cpython_tags', 'create_compatible_tags_selector', 'generic_tags', 'interpreter_name', 'interpreter_version', 'ios_platforms', 'mac_platforms', 'parse_tag', 'platform_tags', 'pure_python_tags', 'sys_tags']\"]",
+            "after": "['val', \"['INTERPRETER_SHORT_NAMES', 'AppleVersion', 'InvalidTag', 'PythonVersion', 'Tag', 'TooManyTagsError', 'UnsortedTagsError', 'android_platforms', 'compatible_tags', 'cpython_tags', 'create_compatible_tags_selector', 'generic_tags', 'interpreter_abi', 'interpreter_name', 'interpreter_version', 'ios_platforms', 'mac_platforms', 'parse_tag', 'platform_tags', 'pure_python_tags', 'sys_tags']\"]"
+          },
+          "reason": "behaviour differs"
+        }
+      ]
+    },
+    {
+      "sha": "55cbf1b942",
+      "seconds": 50.6,
+      "error": null,
+      "subject": "fix(ranges): stop unbounded bounds sorting above each other (#1392)",
+      "total": 38,
+      "changed": 2,
+      "no_change": 36,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "src/packaging/_ranges.py::LowerBound.__init__",
+          "witness": {
+            "args": [
+              "LowerBound(None, [1, 2, 3])",
+              ".__init__(True, [])"
+            ],
+            "before": "['eff', ['val', 'None'], [['self', ['<LowerBound [None>', '<LowerBound (True>']]]]",
+            "after": "['eff', ['val', 'None'], [['self', ['<LowerBound (None>', '<LowerBound (True>']]]]"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "src/packaging/_ranges.py::UpperBound.__init__",
+          "witness": {
+            "args": [
+              "UpperBound(None, [1, 2, 3])",
+              ".__init__(True, [])"
+            ],
+            "before": "['eff', ['val', 'None'], [['self', ['<UpperBound None]>', '<UpperBound True)>']]]]",
+            "after": "['eff', ['val', 'None'], [['self', ['<UpperBound None)>', '<UpperBound True)>']]]]"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "4840c3a681",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "perf(tests): skip coverage on 3.13t (#1391)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "56dd80bca9",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "perf(tests): disable GC while collecting tests (#1389)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

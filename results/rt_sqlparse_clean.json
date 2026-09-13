@@ -1,0 +1,191 @@
+{
+  "summary": {
+    "repo": "sqlparse",
+    "commits_attempted": 8,
+    "commits_completed": 8,
+    "errors": [],
+    "functions_adjudicated": 95,
+    "abstained": 0,
+    "abstention_rate": 0.0,
+    "changed_total": 9,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 10.3,
+    "max_seconds": 34.9
+  },
+  "commits": [
+    {
+      "sha": "60cdc64972",
+      "seconds": 2.7,
+      "error": null,
+      "subject": "Back to development mode.",
+      "total": 4,
+      "changed": 0,
+      "no_change": 4,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "2f40da99b5",
+      "seconds": 3.1,
+      "error": null,
+      "subject": "Update version number.",
+      "total": 4,
+      "changed": 0,
+      "no_change": 4,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b9588d973a",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "Unify the benchmark scripts on a shared harness",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "519e41698a",
+      "seconds": 11.9,
+      "error": null,
+      "subject": "Pair comment/dollar-quote delimiters at the lexer position",
+      "total": 19,
+      "changed": 4,
+      "no_change": 15,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "sqlparse/keywords.py::DelimitedSpans.__init__",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/keywords.py::DelimitedSpans.resolve",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/keywords.py::find_delimited_spans",
+          "witness": {
+            "args": [
+              "'\"(\"\"|\\\\\\\\\"|[^\"])*\"'"
+            ],
+            "before": "['val', '{}']",
+            "after": "['opaque', 'DelimitedSpans']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/utils.py::resolve_paired_delimiters",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "a51df6d9e2",
+      "seconds": 10.9,
+      "error": null,
+      "subject": "Measure reindent offsets backwards to avoid quadratic CPU use",
+      "total": 18,
+      "changed": 3,
+      "no_change": 15,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._current_line_len",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._flatten_up_to_token",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/filters/reindent.py::ReindentFilter._get_offset",
+          "witness": {
+            "args": [
+              "ReindentFilter()",
+              "._get_offset(None)"
+            ],
+            "before": "['exc', 'AttributeError']",
+            "after": "['val', '0']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "d1d8060274",
+      "seconds": 10.3,
+      "error": null,
+      "subject": "Fix uncontrolled CPU consumption (ReDoS) in the lexer's handling of dollar-quoted literals",
+      "total": 17,
+      "changed": 2,
+      "no_change": 15,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [
+        {
+          "function": "sqlparse/keywords.py::find_delimited_spans",
+          "witness": null,
+          "ctor_caused": false
+        },
+        {
+          "function": "sqlparse/utils.py::resolve_paired_delimiters",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "ef2012a5ee",
+      "seconds": 34.9,
+      "error": null,
+      "subject": "Fix quadratic DoS in group_comments (GHSA-f2ff-p2ww-7p4p)",
+      "total": 28,
+      "changed": 0,
+      "no_change": 28,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "53ff44b53e",
+      "seconds": 2.0,
+      "error": null,
+      "subject": "Escape backslashes in output formatters.",
+      "total": 5,
+      "changed": 0,
+      "no_change": 5,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

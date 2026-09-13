@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+# A second push to the same branch cancels the first. These runs execute real code in
+# subprocesses and are not cheap.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        # WINDOWS IS NOT OPTIONAL HERE. Every defect found on 2026-09-12 was a Windows defect
+        # that months of Linux use never surfaced: a `python3` that does not exist, a stripped
+        # HOME, resource limits that need a Job Object, and backslashes eaten inside a bash
+        # string. A Linux-only matrix would have shipped all of them.
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+        include:
+          - os: ubuntu-latest
+            python: "3.10"      # the floor declared in pyproject
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest
+
+      - name: Controls and end-to-end gate tests
+        run: pytest tests/ -q --durations=8
+
+      - name: The packaged entry point works from outside the checkout
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP"
+          runboth selftest | tail -3
+          python -c "import runboth, pathlib; p = pathlib.Path(runboth.engine_dir()) / 'precommit.py'; assert p.exists(), p; print('engine_dir ->', p.parent)"
+
+  package:
+    name: wheel installs and runs clean
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The Action's first step is `pip install runboth`. If the wheel is missing an engine module
+    # the whole product is broken for every customer while this repository's own tests, which run
+    # from the checkout, keep passing. So the wheel is built and exercised from OUTSIDE the tree.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --sdist --wheel --outdir dist/
+      - name: Install the wheel into a clean environment and use it
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet dist/*.whl pytest
+          cd /tmp                       # nowhere near the checkout, so nothing resolves by accident
+          /tmp/venv/bin/runboth selftest | tail -3
+          /tmp/venv/bin/python -c "import runboth, pathlib; d = pathlib.Path(runboth.engine_dir()); missing = [m for m in ('precommit.py','sandbox.py','adjudicate.py','methods.py','blast.py','pr_report.py','install_hook.py') if not (d / m).exists()]; assert not missing, f'wheel is missing engine modules: {missing}'; print('engine complete at', d)"
+
+  dogfood:
+    name: RunBoth on RunBoth
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Pull requests only: it needs two commits to compare, and it should never be the reason a
+    # push to main goes red.
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # the merge base has to exist locally
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install from the checkout
+        run: pip install -e .
+
+      - name: Adjudicate this pull request against itself
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RUNBOTH_PR: ${{ github.event.pull_request.number }}
+        run: |
+          BASE="$(git merge-base "${{ github.event.pull_request.base.sha }}" HEAD)"
+          python runboth/pr_report.py --repo . --base "$BASE" --head HEAD --budget 60 --post \
+            | tee "$GITHUB_STEP_SUMMARY"
+        # Deliberately NOT --fail-on-change. The project dogfoods to prove the tool runs and to
+        # read its own report, not to block its own merges on sampled evidence.
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - name: ruff
+        # Not --fix and not blocking on style opinions: only the checks that catch a real
+        # defect (undefined names, unused imports, syntax).
+        run: ruff check --select E9,F63,F7,F82,F401 runboth/ tests/ scripts/

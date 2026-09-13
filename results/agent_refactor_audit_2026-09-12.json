@@ -1,0 +1,246 @@
+{
+  "adjudicated": 36,
+  "preserved": 20,
+  "changed": 16,
+  "noop": 2,
+  "model_unusable": 1,
+  "abstained": 1,
+  "failures": [
+    {
+      "file": "dicttoolz.py",
+      "name": "_get_factory",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'AttributeError']",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def _get_factory(f, kwargs):\n    factory = kwargs.pop('factory', dict)\n    if kwargs:\n        raise TypeError(\"{}() got an unexpected keyword argument '{}'\".format(f.__name__, kwargs.popitem()[0]))\n    return factory",
+      "after_src": "def _get_factory(f, kwargs):\n    unexpected = [key for key in kwargs if key != 'factory']\n    if unexpected:\n        raise TypeError(\"{}() got an unexpected keyword argument '{}'\".format(f.__name__, unexpected[0]))\n    factory = kwargs.get('factory', dict)\n    kwargs.clear()\n    return factory"
+    },
+    {
+      "file": "functoolz.py",
+      "name": "complement",
+      "witness": {
+        "args": [
+          "-2"
+        ],
+        "before": "['val', 'Compose(<built-in function not_>, -2)']",
+        "after": "['opaque', 'function']"
+      },
+      "before_src": "def complement(func):\n    \"\"\" Convert a predicate function to its logical complement.\n\n    In other words, return a function that, for inputs that normally\n    yield True, yields False, and vice-versa.\n\n    >>> def iseven(n): return n % 2 == 0\n    >>> isodd = complement(iseven)\n    >>> iseven(2)\n    True\n    >>> isodd(2)\n    False\n    \"\"\"\n    return compose(not_, func)",
+      "after_src": "def complement(func):\n    \"\"\" Convert a predicate function to its logical complement.\n\n    In other words, return a function that, for inputs that normally\n    yield True, yields False, and vice-versa.\n\n    >>> def iseven(n): return n % 2 == 0\n    >>> isodd = complement(iseven)\n    >>> iseven(2)\n    True\n    >>> isodd(2)\n    False\n    \"\"\"\n\n    def negated(*args, **kwargs):\n        return not func(*args, **kwargs)\n    return negated"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "_merge_sorted_binary_key",
+      "witness": {
+        "args": [
+          "' '",
+          "[]"
+        ],
+        "before": "['lazy', [['exc', 'TypeError']]]",
+        "after": "['lazy', [['exc', 'IndexError']]]"
+      },
+      "before_src": "def _merge_sorted_binary_key(seqs, key):\n    mid = len(seqs) // 2\n    L1 = seqs[:mid]\n    if len(L1) == 1:\n        seq1 = iter(L1[0])\n    else:\n        seq1 = _merge_sorted_binary_key(L1, key)\n    L2 = seqs[mid:]\n    if len(L2) == 1:\n        seq2 = iter(L2[0])\n    else:\n        seq2 = _merge_sorted_binary_key(L2, key)\n    try:\n        val2 = next(seq2)\n    except StopIteration:\n        yield from seq1\n        return\n    key2 = key(val2)\n    for val1 in seq1:\n        key1 = key(val1)\n        if key2 < key1:\n            yield val2\n            for val2 in seq2:\n                key2 = key(val2)\n                if key2 < key1:\n                    yield val2\n                else:\n                    yield val1\n                    break\n            else:\n                break\n        else:\n            yield val1\n    else:\n        yield val2\n        yield from seq2\n        return\n    yield val1\n    yield from seq1",
+      "after_src": "def _merge_sorted_binary_key(seqs, key):\n    mid = len(seqs) // 2\n    left = seqs[:mid]\n    right = seqs[mid:]\n    seq1 = _merge_sorted_binary_key(left, key) if len(left) > 1 else iter(left[0])\n    seq2 = _merge_sorted_binary_key(right, key) if len(right) > 1 else iter(right[0])\n    try:\n        current2 = next(seq2)\n    except StopIteration:\n        yield from seq1\n        return\n    current2_key = key(current2)\n    exhausted = False\n    for current1 in seq1:\n        current1_key = key(current1)\n        while current2_key < current1_key:\n            yield current2\n            try:\n                current2 = next(seq2)\n                current2_key = key(current2)\n            except StopIteration:\n                exhausted = True\n                break\n        if exhausted:\n            yield current1\n            yield from seq1\n            return\n        yield current1\n    if not exhausted:\n        yield current2\n        yield from seq2"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "take",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def take(n, seq):\n    \"\"\" The first n elements of a sequence\n\n    >>> list(take(2, [10, 20, 30, 40, 50]))\n    [10, 20]\n\n    See Also:\n        drop\n        tail\n    \"\"\"\n    return itertools.islice(seq, n)",
+      "after_src": "def take(n, seq):\n    \"\"\" The first n elements of a sequence\n\n    >>> list(take(2, [10, 20, 30, 40, 50]))\n    [10, 20]\n\n    See Also:\n        drop\n        tail\n    \"\"\"\n    result = []\n    for idx, item in enumerate(seq):\n        if idx >= n:\n            break\n        result.append(item)\n    return iter(result)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "tail",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['val', '()']"
+      },
+      "before_src": "def tail(n, seq):\n    \"\"\" The last n elements of a sequence\n\n    >>> tail(2, [10, 20, 30, 40, 50])\n    [40, 50]\n\n    See Also:\n        drop\n        take\n    \"\"\"\n    try:\n        return seq[-n:]\n    except (TypeError, KeyError):\n        return tuple(collections.deque(seq, n))",
+      "after_src": "def tail(n, seq):\n    \"\"\" The last n elements of a sequence\n\n    >>> tail(2, [10, 20, 30, 40, 50])\n    [40, 50]\n\n    See Also:\n        drop\n        take\n    \"\"\"\n    if n <= 0:\n        return type(seq)() if hasattr(seq, '__getitem__') else tuple()\n    if hasattr(seq, '__getitem__'):\n        try:\n            return seq[len(seq) - n:]\n        except (TypeError, KeyError):\n            pass\n    result = []\n    for item in seq:\n        result.append(item)\n        if len(result) > n:\n            result.pop(0)\n    return tuple(result)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "drop",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def drop(n, seq):\n    \"\"\" The sequence following the first n elements\n\n    >>> list(drop(2, [10, 20, 30, 40, 50]))\n    [30, 40, 50]\n\n    See Also:\n        take\n        tail\n    \"\"\"\n    return itertools.islice(seq, n, None)",
+      "after_src": "def drop(n, seq):\n    \"\"\" The sequence following the first n elements\n\n    >>> list(drop(2, [10, 20, 30, 40, 50]))\n    [30, 40, 50]\n\n    See Also:\n        take\n        tail\n    \"\"\"\n    iterator = iter(seq)\n    for _ in range(n):\n        try:\n            next(iterator)\n        except StopIteration:\n            break\n    return iterator"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "take_nth",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def take_nth(n, seq):\n    \"\"\" Every nth item in seq\n\n    >>> list(take_nth(2, [10, 20, 30, 40, 50]))\n    [10, 30, 50]\n    \"\"\"\n    return itertools.islice(seq, 0, None, n)",
+      "after_src": "def take_nth(n, seq):\n    \"\"\" Every nth item in seq\n\n    >>> list(take_nth(2, [10, 20, 30, 40, 50]))\n    [10, 30, 50]\n    \"\"\"\n    return (item for index, item in enumerate(seq) if index % n == 0)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "last",
+      "witness": {
+        "args": [
+          "0"
+        ],
+        "before": "['exc', 'TypeError']",
+        "after": "['exc', 'IndexError']"
+      },
+      "before_src": "def last(seq):\n    \"\"\" The last element in a sequence\n\n    >>> last('ABC')\n    'C'\n    \"\"\"\n    return tail(1, seq)[0]",
+      "after_src": "def last(seq):\n    \"\"\" The last element in a sequence\n\n    >>> last('ABC')\n    'C'\n    \"\"\"\n    if not seq:\n        raise IndexError('tuple index out of range')\n    for element in seq:\n        pass\n    return element"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "_get",
+      "witness": {
+        "args": [
+          "3.14159",
+          "[]",
+          "[]"
+        ],
+        "before": "['exc', 'TypeError']",
+        "after": "['val', '[]']"
+      },
+      "before_src": "def _get(ind, seq, default):\n    try:\n        return seq[ind]\n    except (KeyError, IndexError):\n        return default",
+      "after_src": "def _get(ind, seq, default):\n    if isinstance(seq, dict):\n        if ind in seq:\n            return seq[ind]\n        return default\n    if isinstance(seq, (list, tuple, str)):\n        if -len(seq) <= ind < len(seq):\n            return seq[ind]\n        return default\n    try:\n        return seq[ind]\n    except (KeyError, IndexError):\n        return default"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "concat",
+      "witness": {
+        "args": [
+          "[1, 2, 3]"
+        ],
+        "before": "['lazy', [['exc', 'TypeError']]]",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def concat(seqs):\n    \"\"\" Concatenate zero or more iterables, any of which may be infinite.\n\n    An infinite sequence will prevent the rest of the arguments from\n    being included.\n\n    We use chain.from_iterable rather than ``chain(*seqs)`` so that seqs\n    can be a generator.\n\n    >>> list(concat([[], [1], [2, 3]]))\n    [1, 2, 3]\n\n    See also:\n        itertools.chain.from_iterable  equivalent\n    \"\"\"\n    return itertools.chain.from_iterable(seqs)",
+      "after_src": "def concat(seqs):\n    \"\"\" Concatenate zero or more iterables, any of which may be infinite.\n\n    An infinite sequence will prevent the rest of the arguments from\n    being included.\n\n    We use chain.from_iterable rather than ``chain(*seqs)`` so that seqs\n    can be a generator.\n\n    >>> list(concat([[], [1], [2, 3]]))\n    [1, 2, 3]\n\n    See also:\n        itertools.chain.from_iterable  equivalent\n    \"\"\"\n    result = []\n    for seq in seqs:\n        for item in seq:\n            result.append(item)\n    return iter(result)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "mapcat",
+      "witness": {
+        "args": [
+          "-2",
+          "'Too few sequences given (min 2 required)'"
+        ],
+        "before": "['lazy', [['exc', 'TypeError']]]",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def mapcat(func, seqs):\n    \"\"\" Apply func to each sequence in seqs, concatenating results.\n\n    >>> list(mapcat(lambda s: [c.upper() for c in s],\n    ...             [[\"a\", \"b\"], [\"c\", \"d\", \"e\"]]))\n    ['A', 'B', 'C', 'D', 'E']\n    \"\"\"\n    return concat(map(func, seqs))",
+      "after_src": "def mapcat(func, seqs):\n    \"\"\" Apply func to each sequence in seqs, concatenating results.\n\n    >>> list(mapcat(lambda s: [c.upper() for c in s],\n    ...             [[\"a\", \"b\"], [\"c\", \"d\", \"e\"]]))\n    ['A', 'B', 'C', 'D', 'E']\n    \"\"\"\n    result = []\n    for seq in seqs:\n        result.extend(func(seq))\n    return result"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "cons",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['lazy', [['val', '-6'], ['exc', 'TypeError']]]",
+        "after": "['exc', 'TypeError']"
+      },
+      "before_src": "def cons(el, seq):\n    \"\"\" Add el to beginning of (possibly infinite) sequence seq.\n\n    >>> list(cons(1, [2, 3]))\n    [1, 2, 3]\n    \"\"\"\n    return itertools.chain([el], seq)",
+      "after_src": "def cons(el, seq):\n    \"\"\" Add el to beginning of (possibly infinite) sequence seq.\n\n    >>> list(cons(1, [2, 3]))\n    [1, 2, 3]\n    \"\"\"\n    return (x for x in (el, *seq)) if not hasattr(seq, '__iter__') else itertools.chain((el,), seq)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "interpose",
+      "witness": {
+        "args": [
+          "-2",
+          "''"
+        ],
+        "before": "['exc', 'StopIteration']",
+        "after": "['lazy', []]"
+      },
+      "before_src": "def interpose(el, seq):\n    \"\"\" Introduce element between each pair of elements in seq\n\n    >>> list(interpose(\"a\", [1, 2, 3]))\n    [1, 'a', 2, 'a', 3]\n    \"\"\"\n    inposed = concat(zip(itertools.repeat(el), seq))\n    next(inposed)\n    return inposed",
+      "after_src": "def interpose(el, seq):\n    \"\"\" Introduce element between each pair of elements in seq\n\n    >>> list(interpose(\"a\", [1, 2, 3]))\n    [1, 'a', 2, 'a', 3]\n    \"\"\"\n    iterator = iter(seq)\n    try:\n        first = next(iterator)\n    except StopIteration:\n        return iter(())\n\n    def gen():\n        yield first\n        for item in iterator:\n            yield el\n            yield item\n    return gen()"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "sliding_window",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['lazy', []]"
+      },
+      "before_src": "def sliding_window(n, seq):\n    \"\"\" A sequence of overlapping subsequences\n\n    >>> list(sliding_window(2, [1, 2, 3, 4]))\n    [(1, 2), (2, 3), (3, 4)]\n\n    This function creates a sliding window suitable for transformations like\n    sliding means / smoothing\n\n    >>> mean = lambda seq: float(sum(seq)) / len(seq)\n    >>> list(map(mean, sliding_window(2, [1, 2, 3, 4])))\n    [1.5, 2.5, 3.5]\n    \"\"\"\n    return zip(*(collections.deque(itertools.islice(it, i), 0) or it for i, it in enumerate(itertools.tee(seq, n))))",
+      "after_src": "def sliding_window(n, seq):\n    \"\"\" A sequence of overlapping subsequences\n\n    >>> list(sliding_window(2, [1, 2, 3, 4]))\n    [(1, 2), (2, 3), (3, 4)]\n\n    This function creates a sliding window suitable for transformations like\n    sliding means / smoothing\n\n    >>> mean = lambda seq: float(sum(seq)) / len(seq)\n    >>> list(map(mean, sliding_window(2, [1, 2, 3, 4])))\n    [1.5, 2.5, 3.5]\n    \"\"\"\n    if n <= 0:\n        return zip()\n    iterators = itertools.tee(seq, n)\n    advanced = []\n    for offset, it in enumerate(iterators):\n        for _ in range(offset):\n            next(it, None)\n        advanced.append(it)\n    return zip(*advanced)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "partition_all",
+      "witness": {
+        "args": [
+          "-6",
+          "2"
+        ],
+        "before": "['lazy', [['exc', 'TypeError']]]",
+        "after": "['lazy', [['exc', 'ValueError']]]"
+      },
+      "before_src": "def partition_all(n, seq):\n    \"\"\" Partition all elements of sequence into tuples of length at most n\n\n    The final tuple may be shorter to accommodate extra elements.\n\n    >>> list(partition_all(2, [1, 2, 3, 4]))\n    [(1, 2), (3, 4)]\n\n    >>> list(partition_all(2, [1, 2, 3, 4, 5]))\n    [(1, 2), (3, 4), (5,)]\n\n    See Also:\n        partition\n    \"\"\"\n    args = [iter(seq)] * n\n    it = zip_longest(*args, fillvalue=no_pad)\n    try:\n        prev = next(it)\n    except StopIteration:\n        return\n    for item in it:\n        yield prev\n        prev = item\n    if prev[-1] is no_pad:\n        try:\n            end = len(seq) % n\n            if prev[end - 1] is no_pad or prev[end] is not no_pad:\n                raise LookupError('The sequence passed to `parition_all` has invalid length')\n            yield prev[:end]\n        except TypeError:\n            lo, hi = (0, n)\n            while lo < hi:\n                mid = (lo + hi) // 2\n                if prev[mid] is no_pad:\n                    hi = mid\n                else:\n                    lo = mid + 1\n            yield prev[:lo]\n    else:\n        yield prev",
+      "after_src": "def partition_all(n, seq):\n    \"\"\" Partition all elements of sequence into tuples of length at most n\n\n    The final tuple may be shorter to accommodate extra elements.\n\n    >>> list(partition_all(2, [1, 2, 3, 4]))\n    [(1, 2), (3, 4)]\n\n    >>> list(partition_all(2, [1, 2, 3, 4, 5]))\n    [(1, 2), (3, 4), (5,)]\n\n    See Also:\n        partition\n    \"\"\"\n    if n <= 0:\n        raise ValueError('n must be positive')\n    iterator = iter(seq)\n    while True:\n        chunk = []\n        for _ in range(n):\n            try:\n                chunk.append(next(iterator))\n            except StopIteration:\n                break\n        if not chunk:\n            return\n        yield tuple(chunk)"
+    },
+    {
+      "file": "itertoolz.py",
+      "name": "peekn",
+      "witness": {
+        "args": [
+          "-2",
+          "'Too few sequences given (min 2 required)'"
+        ],
+        "before": "['exc', 'ValueError']",
+        "after": "['opaque', 'tuple']"
+      },
+      "before_src": "def peekn(n, seq):\n    \"\"\" Retrieve the next n elements of a sequence\n\n    Returns a tuple of the first n elements and an iterable equivalent\n    to the original, still having the elements retrieved.\n\n    >>> seq = [0, 1, 2, 3, 4]\n    >>> first_two, seq = peekn(2, seq)\n    >>> first_two\n    (0, 1)\n    >>> list(seq)\n    [0, 1, 2, 3, 4]\n    \"\"\"\n    iterator = iter(seq)\n    peeked = tuple(take(n, iterator))\n    return (peeked, itertools.chain(iter(peeked), iterator))",
+      "after_src": "def peekn(n, seq):\n    \"\"\" Retrieve the next n elements of a sequence\n\n    Returns a tuple of the first n elements and an iterable equivalent\n    to the original, still having the elements retrieved.\n\n    >>> seq = [0, 1, 2, 3, 4]\n    >>> first_two, seq = peekn(2, seq)\n    >>> first_two\n    (0, 1)\n    >>> list(seq)\n    [0, 1, 2, 3, 4]\n    \"\"\"\n    it = iter(seq)\n    collected = []\n    for _ in range(n):\n        try:\n            collected.append(next(it))\n        except StopIteration:\n            break\n    peeked = tuple(collected)\n    return (peeked, itertools.chain(iter(peeked), it))"
+    }
+  ],
+  "abstentions": [
+    {
+      "file": "fib.py",
+      "name": "fib",
+      "reason": "after: import failed: NameError: name 'memoize' is not defined"
+    }
+  ],
+  "model": "deepseek-chat",
+  "budget": 150,
+  "roots": [
+    "C:/runboth_repos/toolz",
+    "C:/runboth_repos/markupsafe/src"
+  ],
+  "date": "2026-09-12"
+}

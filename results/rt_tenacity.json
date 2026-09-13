@@ -1,0 +1,238 @@
+{
+  "summary": {
+    "repo": "tenacity",
+    "commits_attempted": 6,
+    "commits_completed": 6,
+    "errors": [],
+    "functions_adjudicated": 364,
+    "abstained": 52,
+    "abstention_rate": 14.3,
+    "changed_total": 3,
+    "ctor_caused_changes": 0,
+    "suspect_false_positives": 0,
+    "median_seconds": 183.9,
+    "max_seconds": 371.4
+  },
+  "commits": [
+    {
+      "sha": "26f719dc73",
+      "seconds": 183.9,
+      "error": null,
+      "subject": "Respect enabled=False on the direct-call path (#645)",
+      "total": 54,
+      "changed": 0,
+      "no_change": 45,
+      "abstained": 9,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          4
+        ],
+        [
+          "_RetryDecorated",
+          3
+        ],
+        [
+          "sandbox produced no output",
+          1
+        ],
+        [
+          "_AsyncRetryDecorator",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "949dcfa6c0",
+      "seconds": 92.5,
+      "error": null,
+      "subject": "fix: read the tornado global live instead of an import-time snapshot (#696)",
+      "total": 48,
+      "changed": 1,
+      "no_change": 39,
+      "abstained": 8,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          3
+        ],
+        [
+          "_RetryDecorated",
+          3
+        ],
+        [
+          "sandbox produced no output",
+          1
+        ],
+        [
+          "_AsyncRetryDecorator",
+          1
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "tenacity/__init__.py::_has_tornado",
+          "witness": null,
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "389aab8b26",
+      "seconds": 181.3,
+      "error": null,
+      "subject": "fix: restore support for falsy wait values and callable + strategy (#694)",
+      "total": 74,
+      "changed": 2,
+      "no_change": 60,
+      "abstained": 12,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          5
+        ],
+        [
+          "_RetryDecorated",
+          3
+        ],
+        [
+          "wait_chain",
+          2
+        ],
+        [
+          "killed at the 30s wall clock",
+          1
+        ],
+        [
+          "_AsyncRetryDecorator",
+          1
+        ]
+      ],
+      "changed_records": [
+        {
+          "function": "tenacity/wait.py::wait_base.__radd__",
+          "witness": {
+            "args": [
+              "wait_fixed(-1)",
+              ".__radd__('a')"
+            ],
+            "before": "['val', 'NotImplemented']",
+            "after": "['opaque', 'wait_combine']"
+          },
+          "ctor_caused": false
+        },
+        {
+          "function": "tenacity/wait.py::wait_combine.__call__",
+          "witness": {
+            "args": [
+              "wait_combine()",
+              ".__call__(-2)"
+            ],
+            "before": "['val', '0']",
+            "after": "['val', '0.0']"
+          },
+          "ctor_caused": false
+        }
+      ],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "a09999688c",
+      "seconds": 371.4,
+      "error": null,
+      "subject": "refactor: mark overridden methods with @override (#682)",
+      "total": 141,
+      "changed": 0,
+      "no_change": 125,
+      "abstained": 16,
+      "abstain_reasons": [
+        [
+          "differs from itself across processes",
+          5
+        ],
+        [
+          "_RetryDecorated",
+          3
+        ],
+        [
+          "retry_if_not_exception_message",
+          2
+        ],
+        [
+          "wait_chain",
+          2
+        ],
+        [
+          "killed at the 30s wall clock",
+          1
+        ],
+        [
+          "_AsyncRetryDecorator",
+          1
+        ],
+        [
+          "LoggerProtocol",
+          1
+        ],
+        [
+          "retry_if_exception_message",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "b189e15616",
+      "seconds": 0.2,
+      "error": null,
+      "subject": "test: fix possibly-undefined and deprecated call sites (#681)",
+      "total": 0,
+      "changed": 0,
+      "no_change": 0,
+      "abstained": 0,
+      "abstain_reasons": [],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    },
+    {
+      "sha": "d6690dc06a",
+      "seconds": 232.7,
+      "error": null,
+      "subject": "refactor: declare BaseAction's REPR_FIELDS and NAME as ClassVar (#680)",
+      "total": 47,
+      "changed": 0,
+      "no_change": 40,
+      "abstained": 7,
+      "abstain_reasons": [
+        [
+          "_RetryDecorated",
+          3
+        ],
+        [
+          "differs from itself across processes",
+          2
+        ],
+        [
+          "killed at the 30s wall clock",
+          1
+        ],
+        [
+          "_AsyncRetryDecorator",
+          1
+        ]
+      ],
+      "changed_records": [],
+      "ctor_caused_changes": 0,
+      "suspect_false_positives": []
+    }
+  ]
+}

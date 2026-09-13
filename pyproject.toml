@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "runboth"
+version = "0.1.0"
+description = "An AI changed your code. RunBoth runs both versions and tells you what actually behaves differently, including the functions nobody touched."
+readme = "README.md"
+requires-python = ">=3.10"
+# FSL-1.1-Apache-2.0: source-available, free for every use except building a competing
+# product, and it converts to plain Apache 2.0 automatically two years after each release.
+# Chosen 2026-09-12 over the MIT OR Apache-2.0 that was declared here before, because nothing
+# is published yet so the change costs nothing, and because a permissive licence on a product
+# whose whole value is one narrow mechanism invites exactly one outcome. Reversible: relicense
+# is the author's to make right up until the first public release.
+license = { text = "FSL-1.1-Apache-2.0" }
+authors = [{ name = "Kyle Clouthier", email = "kyle@simgen.dev" }]
+keywords = ["differential testing", "behaviour", "refactoring", "AI agents", "code review"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing",
+]
+
+[project.urls]
+Homepage = "https://runboth.dev"
+
+[project.scripts]
+runboth = "runboth.cli:main"
+
+# The engine is a flat directory of modules that import each other by bare name
+# (`import sandbox`), and every entry point already puts its own directory on sys.path.
+# Installing that directory AS the `runboth` package, with an __init__ that does the same
+# sys.path insert, keeps those imports working unchanged whether the tree is run from a
+# checkout or from site-packages.
+[tool.setuptools]
+packages = ["runboth"]
+
+[tool.setuptools.package-dir]
+runboth = "runboth"

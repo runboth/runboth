@@ -1,0 +1,114 @@
+name: "RunBoth"
+description: "An AI changed your code. RunBoth runs both versions and comments what actually behaves differently."
+author: "Clouthier Simulation Labs"
+branding:
+  icon: "git-branch"
+  color: "green"
+
+inputs:
+  budget:
+    description: "Generated inputs per function. Higher finds more and costs more time."
+    required: false
+    default: "60"
+  comment:
+    description: "Post the findings as a sticky pull-request comment."
+    required: false
+    default: "true"
+  fail-on-change:
+    description: >
+      Fail the check when behaviour changed. Off by default on purpose: the verdict is sampled
+      evidence, never proof, and a check that blocks a merge on evidence gets removed the first
+      time it is wrong.
+    required: false
+    default: "false"
+  python-version:
+    description: "Python used to run the adjudication."
+    required: false
+    default: "3.12"
+  token:
+    description: "Token used to post the comment. The default GITHUB_TOKEN is enough."
+    required: false
+    default: ${{ github.token }}
+  working-directory:
+    description: "Repository root, if it is not the workspace root."
+    required: false
+    default: "."
+
+outputs:
+  changed:
+    description: "true when at least one behaviour change was found."
+    value: ${{ steps.run.outputs.changed }}
+  report:
+    description: "The Markdown report."
+    value: ${{ steps.run.outputs.report }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install RunBoth
+      shell: bash
+      run: pip install --quiet runboth
+
+    - name: Work out what to compare
+      id: range
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        # A pull request compares the MERGE BASE against the head, not the base branch tip:
+        # comparing against the tip attributes every commit that landed on main since the
+        # branch opened to this pull request, which is somebody else's work.
+        if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
+          BASE="$(git merge-base "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" || echo "${{ github.event.pull_request.base.sha }}")"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+        else
+          BASE="${{ github.event.before }}"
+          HEAD="${{ github.sha }}"
+        fi
+        # A first push, a force-push, or a shallow clone can leave BASE unusable. Say so and
+        # skip rather than adjudicating against a tree that is not there.
+        if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "RunBoth: no usable base commit to compare against; skipping." >&2
+        else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "head=$HEAD" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Adjudicate
+      id: run
+      if: steps.range.outputs.skip == 'false'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        RUNBOTH_PR: ${{ github.event.pull_request.number }}
+      run: |
+        ENGINE="$(python -c 'import runboth; print(runboth.engine_dir())')"
+        ARGS=(--repo . --base "${{ steps.range.outputs.base }}" --head "${{ steps.range.outputs.head }}" --budget "${{ inputs.budget }}")
+        [ "${{ inputs.comment }}" = "true" ] && [ -n "$RUNBOTH_PR" ] && ARGS+=(--post)
+        [ "${{ inputs.fail-on-change }}" = "true" ] && ARGS+=(--fail-on-change)
+        set +e
+        python "$ENGINE/pr_report.py" "${ARGS[@]}" > report.md
+        CODE=$?
+        set -e
+        cat report.md
+        {
+          echo "report<<RUNBOTH_EOF"
+          cat report.md
+          echo "RUNBOTH_EOF"
+        } >> "$GITHUB_OUTPUT"
+        if grep -q "RunBoth found" report.md; then
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+        fi
+        # The report also lands in the job summary, so it is readable without opening logs.
+        cat report.md >> "$GITHUB_STEP_SUMMARY"
+        exit $CODE

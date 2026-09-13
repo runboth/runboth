@@ -1,0 +1,82 @@
+name: Release
+
+# Publishes to PyPI when a version tag is pushed, using PyPI Trusted Publishing (OIDC).
+#
+# There is no API token anywhere in this repository or in its secrets. PyPI verifies the identity
+# of THIS workflow, in THIS repository, in THIS environment, and mints a short-lived credential
+# for the one upload. Nothing to leak, nothing to rotate, and a stolen repository secret cannot
+# publish a release because there is no repository secret.
+#
+# To cut a release:
+#   1. bump `version` in pyproject.toml
+#   2. git tag v0.1.0 && git push origin v0.1.0
+#
+# The tag must match the version in pyproject.toml. The guard below fails the job if it does not,
+# because a release whose tag and metadata disagree is the kind of thing nobody notices until a
+# user reports installing something other than what the tag says.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --sdist --wheel --outdir dist/
+
+      - name: The tag must match the packaged version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(python -c "import tomllib,pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'])")"
+          echo "tag=$TAG packaged=$PKG"
+          [ "$TAG" = "$PKG" ] || { echo "::error::tag v$TAG does not match pyproject version $PKG"; exit 1; }
+
+      - name: The wheel must carry a working engine
+        # A release that installs but cannot adjudicate is worse than no release. This is the same
+        # check CI runs on every push, repeated here because this is the artifact users get.
+        run: |
+          python -m venv /tmp/rel
+          /tmp/rel/bin/pip install --quiet dist/*.whl pytest
+          cd /tmp
+          /tmp/rel/bin/runboth selftest | tail -3
+          /tmp/rel/bin/python -c "import runboth, pathlib; d = pathlib.Path(runboth.engine_dir()); missing = [m for m in ('precommit.py','sandbox.py','adjudicate.py','methods.py','blast.py','pr_report.py','install_hook.py') if not (d / m).exists()]; assert not missing, f'wheel is missing engine modules: {missing}'; print('engine complete')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The environment is what PyPI's trusted publisher is bound to, and it is also where a
+    # required reviewer can be attached so a tag push alone cannot ship a release.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/runboth
+    permissions:
+      id-token: write      # REQUIRED for OIDC. Without it the upload cannot mint a credential.
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
