@@ -39,15 +39,12 @@ makes them self-contained, which the experiment needs anyway, and it means nothi
 an attribute access, or a call to anything outside the whitelist is ever executed.
 """
 
-import argparse
 import ast
 import copy
 import sys
-import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from engine import compare  # noqa: E402
 
 # Everything a harvested function is allowed to reach. Anything else and it is not executed.
 SAFE_BUILTINS = {

@@ -49,8 +49,6 @@ fingerprint is used in: two CI runs, on two machines, days apart.
     NONDETERMINISTIC    repeats disagree even with fresh inputs. NOT fingerprintable. Abstain.
 """
 
-import argparse
-import ast
 import copy
 import sys
 from pathlib import Path
