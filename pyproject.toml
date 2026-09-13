@@ -26,6 +26,9 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://runboth.dev"
+Source = "https://github.com/runboth/runboth"
+Issues = "https://github.com/runboth/runboth/issues"
+Changelog = "https://github.com/runboth/runboth/releases"
 
 [project.scripts]
 runboth = "runboth.cli:main"

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="brand/mark-128.png" width="72" alt="">
+  <img src="https://raw.githubusercontent.com/runboth/runboth/main/brand/mark-128.png" width="72" alt="RunBoth">
 </p>
 
 <h1 align="center">RunBoth</h1>
@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href="https://runboth.dev">runboth.dev</a> ·
-  <a href="HOW_IT_WORKS.md">How it works</a> ·
-  <a href="RED_TEAM_2026-09-12.md">Red team results</a>
+  <a href="https://github.com/runboth/runboth/blob/main/HOW_IT_WORKS.md">How it works</a> ·
+  <a href="https://github.com/runboth/runboth/blob/main/RED_TEAM_2026-09-12.md">Red team results</a>
 </p>
 
 ---
@@ -91,7 +91,7 @@ damages nothing; both versions come from your git history, and no test suite is 
 
 Red-teamed against eight public repositories it had never been tuned on, with an automated oracle
 built to catch the tool lying. **2,548 functions, zero false positives.** Full method and numbers
-in [RED_TEAM_2026-09-12.md](RED_TEAM_2026-09-12.md).
+in [RED_TEAM_2026-09-12.md](https://github.com/runboth/runboth/blob/main/RED_TEAM_2026-09-12.md).
 
 | repo | layout | functions | abstained | median/commit |
 |---|---|---|---|---|
@@ -140,7 +140,7 @@ runboth selftest          # the control suites, half of which must fail
 
 ## Licence
 
-[FSL-1.1-Apache-2.0](LICENSE.md). Free for every use except building a competing product, and it
+[FSL-1.1-Apache-2.0](https://github.com/runboth/runboth/blob/main/LICENSE.md). Free for every use except building a competing product, and it
 converts to plain Apache 2.0 two years after each release.
 
 Built by Kyle Clouthier at Clouthier Simulation Labs.
