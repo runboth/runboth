@@ -80,7 +80,6 @@ No test suite required. No network calls. No AI model. No dependencies.
 pip install runboth                                  # once the first release is on PyPI
 pip install git+https://github.com/runboth/runboth   # works today
 runboth install-hook          # a commit-msg gate, silent unless behaviour moved
-runboth audit .               # a drift report across recent commits
 ```
 
 As a GitHub Action, running on your own runners:
@@ -152,17 +151,6 @@ iteration order, mutable defaults, generators, `__file__` paths) produced none.
 | `RUNBOTH_NO_VERSION_STUB=1` | do not synthesise a missing generated `_version.py` |
 
 `git commit --no-verify` also bypasses the gate, and the gate says so itself when it blocks.
-
-## The drift audit
-
-```bash
-runboth audit /path/to/repo --commits 40 --budget 60 --out audit.md
-```
-
-Walks a range of commits, adjudicates each against its parent, and writes one Markdown
-report: what was examined, what changed with the input that proves it, and what could not
-be checked with the reason. It states its budget and does not use the word "safe", because
-`no_change at 60 inputs` is evidence and not proof.
 
 ## Honest limits
 

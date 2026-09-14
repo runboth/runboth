@@ -7,7 +7,6 @@ runboth: one entry point. Everything else in this tree is a library or an experi
     runboth hook         [REPO]                  post-edit check for an agent harness
     runboth install-hook [REPO]                  git pre-commit gate: agents cannot skip it
     runboth versions   PKG OLD NEW              what actually changed between two releases
-    runboth audit        REPO                    drift audit across recent commits
     runboth selftest                             every control suite, exit non-zero on failure
 
 Every command takes --json and emits the same vendor-neutral contract, so a CLI, an MCP server,
@@ -103,12 +102,6 @@ def cmd_classes(args):
         print(f"  BEHAVIOUR {i}  ({len(members)} candidate{'s' if len(members) != 1 else ''})"
               f"   {', '.join(map(str, members))}")
     return 0
-
-
-def cmd_audit(args):
-    """The drift audit: adjudicate a range of commits and write a client-ready report."""
-    from audit import cmd_audit as _run
-    return _run(args)
 
 
 def cmd_hook(args):
@@ -337,15 +330,6 @@ def main():
     v.add_argument("--limit", type=int, default=None)
     v.add_argument("--json", dest="json_out", default=None)
     v.set_defaults(fn=cmd_versions)
-
-    au = sub.add_parser("audit", help="drift audit across recent commits, as a report")
-    au.add_argument("repo")
-    au.add_argument("--commits", type=int, default=30, help="how many recent commits to examine")
-    au.add_argument("--budget", type=int, default=60, help="generated inputs per function")
-    au.add_argument("--branch", default=None)
-    au.add_argument("--out", default=None, help="write the Markdown report here")
-    au.add_argument("--json", default=None, help="write the raw findings here")
-    au.set_defaults(fn=cmd_audit)
 
     s = sub.add_parser("selftest", help="run every control suite")
     s.set_defaults(fn=cmd_selftest)

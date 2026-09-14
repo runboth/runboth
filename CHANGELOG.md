@@ -7,10 +7,6 @@ was released.
 
 ### Added
 
-- **`runboth audit`**, a drift audit across a range of commits, written out as a Markdown
-  report. It carries the same contract the tool does: it never says "safe", every finding
-  ships the witness input that proves it, and every abstention is listed with its reason
-  rather than summarised away.
 - **Progress output** during adjudication, on stderr. A run on a real repository takes
   minutes and used to print nothing at all, which is indistinguishable from a hang. stdout
   is untouched, so `--json` consumers see exactly what they saw before.
