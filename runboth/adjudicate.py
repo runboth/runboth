@@ -401,7 +401,6 @@ def _stub_generated_version(root):
     can never manufacture a `changed`.
     """
     import os as _o
-    import re as _re
     if _o.environ.get("RUNBOTH_NO_VERSION_STUB"):
         return  # escape hatch: measure the cost of the stub, or refuse it on a repo it harms
     for dirpath, _dirs, files in _o.walk(root):

@@ -10,6 +10,19 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/runboth/runboth/actions/workflows/ci.yml"><img
+    src="https://github.com/runboth/runboth/actions/workflows/ci.yml/badge.svg"
+    alt="CI"></a>
+  <a href="https://pypi.org/project/runboth/"><img
+    src="https://img.shields.io/pypi/v/runboth.svg?color=2f6f4f" alt="PyPI"></a>
+  <a href="https://pypi.org/project/runboth/"><img
+    src="https://img.shields.io/pypi/pyversions/runboth.svg" alt="Python versions"></a>
+  <a href="https://github.com/runboth/runboth/blob/main/LICENSE.md"><img
+    src="https://img.shields.io/badge/licence-FSL--1.1--Apache--2.0-3b5bdb.svg"
+    alt="Licence: FSL-1.1-Apache-2.0"></a>
+</p>
+
+<p align="center">
   <a href="https://runboth.dev">runboth.dev</a> ·
   <a href="https://github.com/runboth/runboth/blob/main/HOW_IT_WORKS.md">How it works</a> ·
   <a href="https://github.com/runboth/runboth/blob/main/RED_TEAM_2026-09-12.md">Red team results</a>

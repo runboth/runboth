@@ -232,17 +232,20 @@ def main():
     # A GATE THAT SAYS NOTHING IS INDISTINGUISHABLE FROM A HUNG ONE, and this file already
     # records that freezing the terminal is what kills adoption. stderr only: git shows it to
     # the developer, and nothing reading stdout sees a change.
-    def _tick(i, q):
+    def _tick(i, _q):
+        # COUNT ONLY, NEVER THE NAME. In this gate a named function is a changed function,
+        # and tests/test_measurement_artifacts.py asserts exactly that by checking a name
+        # never appears anywhere in the output. Progress must prove liveness without
+        # borrowing the meaning that naming carries.
         try:
-            sys.stderr.write("\r  runboth: checking %d/%d  %-38s"
-                             % (i, len(jobs), str(q).split("::")[-1][:38]))
+            sys.stderr.write("\r  runboth: checking %d/%d" % (i, len(jobs)))
             sys.stderr.flush()
         except Exception:  # noqa: BLE001  a broken pipe must never block a commit
             pass
 
     def _tick_done():
         try:
-            sys.stderr.write("\r" + " " * 64 + "\r")
+            sys.stderr.write("\r" + " " * 40 + "\r")
             sys.stderr.flush()
         except Exception:  # noqa: BLE001
             pass
