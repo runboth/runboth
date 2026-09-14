@@ -104,7 +104,7 @@ def run_audit(repo, commits=30, budget=60, progress=None, branch=None):
 
 def _witness_line(w):
     if not w:
-        return "_no witness recorded_"
+        return "_no witness_"
     args = ", ".join(w.get("args") or [])
     return "`%s`\n\n  - before: `%s`\n  - after:  `%s`" % (
         args, str(w.get("before"))[:200], str(w.get("after"))[:200])
