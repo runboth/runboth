@@ -110,6 +110,30 @@ jobs:
         # Deliberately NOT --fail-on-change. The project dogfoods to prove the tool runs and to
         # read its own report, not to block its own merges on sampled evidence.
 
+  action-smoke:
+    name: the Action itself runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Pull requests only, same reason as the dogfood job: it needs a merge base.
+    #
+    # WHY THIS EXISTS. `RunBoth on RunBoth` calls pr_report.py directly, so until now
+    # nothing had ever executed action.yml, and that is the file people consume from the
+    # Marketplace. Its composite steps, its input defaults and its base/head resolution had
+    # no green run behind them. This uses the Action the way a stranger would.
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./
+        with:
+          budget: "30"
+          comment: "false"        # one bot comment per PR is enough; the dogfood job posts it
+          fail-on-change: "false"
+
   lint:
     name: lint
     runs-on: ubuntu-latest

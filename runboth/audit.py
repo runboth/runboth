@@ -107,7 +107,7 @@ def _witness_line(w):
         return "_no witness recorded_"
     args = ", ".join(w.get("args") or [])
     return "`%s`\n\n  - before: `%s`\n  - after:  `%s`" % (
-        args, str(w.get("before"))[:300], str(w.get("after"))[:300])
+        args, str(w.get("before"))[:200], str(w.get("after"))[:200])
 
 
 def report_markdown(summary, findings, skipped):
