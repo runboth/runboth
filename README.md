@@ -47,6 +47,24 @@ $ git commit -m "refactor: tidy up the rates module"
       now:      return 250.0
 ```
 
+## Why this exists
+
+An AI refactors a module and reports that the behaviour is unchanged. Usually that is true.
+Measurably often it is not: Dristi and Dwyer tested six models across three datasets and two
+refactoring types and found LLM refactorings **functionally non-equivalent 19 to 35% of the
+time** ([arXiv:2602.15761](https://arxiv.org/abs/2602.15761), February 2026).
+
+Review does not catch it. A diff is an honest record of the *edit*, not of the *effect*, and
+those are different documents. The function that broke is often in a file the diff never
+mentions, because it only calls what changed.
+
+Tests do not close the gap either. A test asserts what somebody previously thought to assert,
+and the code most likely to move silently is the code nobody wrote a test for. If an AI wrote
+the tests as well, you have asked one system to mark its own homework.
+
+So RunBoth does the boring thing that works: it runs both versions and compares what actually
+comes out.
+
 ## What it does
 
 It checks out both versions of your code, generates inputs for every changed function from its
