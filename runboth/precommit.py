@@ -229,6 +229,24 @@ def main():
                        "witness": None,
                        "reason": f"internal error: {type(e).__name__}: {str(e)[:100]}"}
 
+    # A GATE THAT SAYS NOTHING IS INDISTINGUISHABLE FROM A HUNG ONE, and this file already
+    # records that freezing the terminal is what kills adoption. stderr only: git shows it to
+    # the developer, and nothing reading stdout sees a change.
+    def _tick(i, q):
+        try:
+            sys.stderr.write("\r  runboth: checking %d/%d  %-38s"
+                             % (i, len(jobs), str(q).split("::")[-1][:38]))
+            sys.stderr.flush()
+        except Exception:  # noqa: BLE001  a broken pipe must never block a commit
+            pass
+
+    def _tick_done():
+        try:
+            sys.stderr.write("\r" + " " * 64 + "\r")
+            sys.stderr.flush()
+        except Exception:  # noqa: BLE001
+            pass
+
     if len(jobs) <= 1:
         results = [_one(j) for j in jobs]
     else:
@@ -239,7 +257,12 @@ def main():
         # by a third. Small and tunable.
         workers = max(1, min(len(jobs), int(os.environ.get("RUNBOTH_WORKERS", "4"))))
         with _cf.ThreadPoolExecutor(max_workers=workers) as ex:
-            results = list(ex.map(_one, jobs))
+            results = []
+            for _i, _r in enumerate(ex.map(_one, jobs), 1):
+                _tick(_i, _r[0])
+                results.append(_r)
+    if jobs:
+        _tick_done()
 
     for q, rec in results:
         if True:

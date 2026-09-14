@@ -7,6 +7,7 @@ runboth: one entry point. Everything else in this tree is a library or an experi
     runboth hook         [REPO]                  post-edit check for an agent harness
     runboth install-hook [REPO]                  git pre-commit gate: agents cannot skip it
     runboth versions   PKG OLD NEW              what actually changed between two releases
+    runboth audit        REPO                    drift audit across recent commits
     runboth selftest                             every control suite, exit non-zero on failure
 
 Every command takes --json and emits the same vendor-neutral contract, so a CLI, an MCP server,
@@ -41,7 +42,8 @@ def cmd_adjudicate(args):
         print("  CONTROLS FAILED. Refusing to adjudicate: the comparison layer is not trustworthy.",
               file=_s.stderr if args.json else _s.stdout)
         return 1
-    records, err = adjudicate(args.repo, args.base, args.head, args.budget)
+    # Progress narrates to stderr in both modes, so --json still owns stdout exactly.
+    records, err = adjudicate(args.repo, args.base, args.head, args.budget, progress=_s.stderr)
     if err:
         if args.json:
             # Even the error path must not put prose on stdout: a consumer that gets `[]` and a
@@ -101,6 +103,12 @@ def cmd_classes(args):
         print(f"  BEHAVIOUR {i}  ({len(members)} candidate{'s' if len(members) != 1 else ''})"
               f"   {', '.join(map(str, members))}")
     return 0
+
+
+def cmd_audit(args):
+    """The drift audit: adjudicate a range of commits and write a client-ready report."""
+    from audit import cmd_audit as _run
+    return _run(args)
 
 
 def cmd_hook(args):
@@ -238,24 +246,28 @@ def cmd_selftest(_args):
     print(f"\n  {BANNER}\n  SELFTEST: every control suite, including the ones that must fail\n")
 
     from determinism import run_controls as det_controls
-    print("  [1/5] determinism gate")
+    print("  [1/6] determinism gate")
     ok &= bool(det_controls())
 
     from adjudicate import run_controls as adj_controls
-    print("  [2/5] comparison layer, known-answer pairs")
+    print("  [2/6] comparison layer, known-answer pairs")
     ok &= bool(adj_controls(200))
 
     from interagent import run_controls as ia_controls
-    print("  [3/5] inter-agent detection")
+    print("  [3/6] inter-agent detection")
     ok &= bool(ia_controls(200))
 
     from sandbox import run_controls as sbx_controls
-    print("  [4/5] sandbox: each case MUST be stopped")
+    print("  [4/6] sandbox: each case MUST be stopped")
     ok &= bool(sbx_controls())
 
     from methods import run_controls as meth_controls
-    print("  [5/5] methods and classes")
+    print("  [5/6] methods and classes")
     ok &= bool(meth_controls(40))
+
+    from control_version_stub import run_controls as vs_controls
+    print("  [6/6] generated _version.py stub")
+    ok &= bool(vs_controls())
 
     print(f"\n  SELFTEST: {'ALL SUITES PASS' if ok else 'FAILURE'}")
     if not ok:
@@ -325,6 +337,15 @@ def main():
     v.add_argument("--limit", type=int, default=None)
     v.add_argument("--json", dest="json_out", default=None)
     v.set_defaults(fn=cmd_versions)
+
+    au = sub.add_parser("audit", help="drift audit across recent commits, as a report")
+    au.add_argument("repo")
+    au.add_argument("--commits", type=int, default=30, help="how many recent commits to examine")
+    au.add_argument("--budget", type=int, default=60, help="generated inputs per function")
+    au.add_argument("--branch", default=None)
+    au.add_argument("--out", default=None, help="write the Markdown report here")
+    au.add_argument("--json", default=None, help="write the raw findings here")
+    au.set_defaults(fn=cmd_audit)
 
     s = sub.add_parser("selftest", help="run every control suite")
     s.set_defaults(fn=cmd_selftest)

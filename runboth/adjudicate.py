@@ -377,7 +377,104 @@ def materialise(repo, rev):
             tf.extractall(d, filter="data")
     except Exception:
         return None
+    _stub_generated_version(d)
     return d
+
+
+def _stub_generated_version(root):
+    """Write the `_version.py` that the BUILD would have written, when it is missing.
+
+    setuptools_scm and friends generate `pkg/_version.py` at build time and gitignore it,
+    so it is never in the tree `git archive` gives us. The package's `__init__` imports it,
+    the import raises ModuleNotFoundError, and EVERY function in the package abstains for a
+    reason that has nothing to do with its behaviour.
+
+    Measured 2026-09-14 on humanize: 20 of 23 functions abstained, all of them on
+    `No module named 'humanize._version'`, dropping the adjudicated rate to 13%. This is not
+    a rare shape; it is most of the modern packaging ecosystem.
+
+    Deliberately narrow: only a directory that is already a package, only when `_version.py`
+    is absent, and only when a sibling module actually mentions `_version`. The honest cost is
+    that a commit which changes how a version string is DERIVED will not be measured, since
+    both sides now get the same stub. That trades a rare miss for a whole ecosystem of
+    functions that could not be executed at all, and the stub is identical on both sides so it
+    can never manufacture a `changed`.
+    """
+    import os as _o
+    import re as _re
+    if _o.environ.get("RUNBOTH_NO_VERSION_STUB"):
+        return  # escape hatch: measure the cost of the stub, or refuse it on a repo it harms
+    for dirpath, _dirs, files in _o.walk(root):
+        if "__init__.py" not in files or "_version.py" in files:
+            continue
+        if not any(f.endswith(".py") and _needs_version_stub(_read_quiet(_o.path.join(dirpath, f)))
+                   for f in files):
+            continue
+        try:
+            with open(_o.path.join(dirpath, "_version.py"), "w", encoding="utf-8") as fh:
+                fh.write("# synthesised by RunBoth: the build generates this file and git "
+                         "does not carry it.\n"
+                         '__version__ = version = "0.0.0"\n'
+                         "__version_tuple__ = version_tuple = (0, 0, 0)\n")
+        except OSError:
+            pass
+
+
+def _needs_version_stub(src):
+    """True only when importing `_version` would HARD FAIL this module.
+
+    A package that already guards the import and falls back is working, and stubbing it
+    changes an answer that was never broken. dateutil does exactly this:
+
+        try:
+            from ._version import version as __version__
+        except ImportError:
+            __version__ = 'unknown'
+
+    Measured 2026-09-14: without this check the stub flipped dateutil's __version__ from
+    'unknown' to '0.0.0' on a package that imported perfectly well. Both sides get the same
+    stub so it could not have manufactured a `changed`, but changing behaviour that was not
+    broken is the one thing this tool may never do. So: only an UNGUARDED import counts.
+    """
+    if "_version" not in src:
+        return False
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return False
+
+    guarded = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Try):
+            catches_import = any(
+                h.type is None
+                or (isinstance(h.type, ast.Name) and h.type.id in ("ImportError", "Exception"))
+                or (isinstance(h.type, ast.Tuple)
+                    and any(isinstance(e, ast.Name) and e.id in ("ImportError", "Exception")
+                            for e in h.type.elts))
+                for h in node.handlers)
+            if catches_import:
+                for sub in node.body:
+                    for n2 in ast.walk(sub):
+                        guarded.add(id(n2))
+
+    for node in ast.walk(tree):
+        hit = False
+        if isinstance(node, ast.ImportFrom) and (node.module or "").endswith("_version"):
+            hit = True
+        elif isinstance(node, ast.Import):
+            hit = any(al.name.endswith("_version") for al in node.names)
+        if hit and id(node) not in guarded:
+            return True
+    return False
+
+
+def _read_quiet(path):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            return fh.read()
+    except OSError:
+        return ""
 
 
 def call_text(qname_or_name, args):
@@ -499,7 +596,7 @@ def constructor_rollup_line(rollup, anchor):
             f"and are not listed separately.")
 
 
-def adjudicate(repo, base, head, budget=400):
+def adjudicate(repo, base, head, budget=400, progress=None):
     files = changed_python_files(repo, base, head)
     if not files:
         # SAY WHICH, never just go quiet. A commit that touches only tests or benchmarks has no
@@ -697,15 +794,48 @@ def adjudicate(repo, base, head, budget=400):
     workers = max(1, min(len(jobs),
                          int(_os.environ.get("RUNBOTH_WORKERS", "4")),
                          (_os.cpu_count() or 2)))
+    # SILENCE IS NOT A STATUS. This runs for minutes on a real repository and printed
+    # nothing until it finished, so a user watching it cannot tell work from a hang, and
+    # neither could I: on 2026-09-14 I killed my own runs twice assuming they were stuck.
+    # A tool whose whole claim is saying what it checked and how hard should not go quiet
+    # while doing it. Progress goes to STDERR only, the same place the controls narrate
+    # under --json, so the stdout contract is untouched and a pipeline sees no difference.
+    total = len(jobs)
+
+    def _tick(n, qname):
+        if progress is None:
+            return
+        try:
+            progress.write("\r  adjudicating %d/%d  %-46s" % (n, total, str(qname)[:46]))
+            progress.flush()
+        except Exception:  # noqa: BLE001  a broken pipe must never end the run
+            pass
+
+    def _tick_done():
+        if progress is None:
+            return
+        try:
+            progress.write("\r" + " " * 72 + "\r")
+            progress.flush()
+        except Exception:  # noqa: BLE001
+            pass
+
     if workers == 1 or len(jobs) <= 2:
-        return static + [_safe_pair(j) for j in jobs], ""
+        out = list(static)
+        for i, j in enumerate(jobs, 1):
+            _tick(i, j[0])
+            out.append(_safe_pair(j))
+        _tick_done()
+        return out, ""
     out = list(static)
     with _cf.ThreadPoolExecutor(max_workers=workers) as ex:
         # Threads, not processes: the work these threads do is almost entirely WAITING on sandbox
         # subprocesses, so the GIL is released for the duration and a process pool would only add
         # pickling of the module sources for no gain.
-        for rec in ex.map(_safe_pair, jobs):
+        for i, rec in enumerate(ex.map(_safe_pair, jobs), 1):
+            _tick(i, rec.get("function", ""))
             out.append(rec)
+    _tick_done()
     return out, ""
 
 
