@@ -20,7 +20,14 @@ keywords = ["differential testing", "behaviour", "refactoring", "AI agents", "co
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
+  # The specific minors matter: PyPI filters on these, and the pyversions badge reads
+  # classifiers rather than requires-python, so without them it renders an uninformative
+  # "python: 3". These are exactly the versions CI tests, and adding one here without
+  # adding it to the matrix would be a claim nothing checks.
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Software Development :: Testing",
 ]
 
