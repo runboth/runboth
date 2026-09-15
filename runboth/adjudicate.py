@@ -508,13 +508,28 @@ def call_text(qname_or_name, args):
 
 
 def _is_ctor_failure(rec):
-    """The AFTER side is nothing but a failed construction, so the method never ran.
+    """EITHER side is nothing but a failed construction, so the method never ran on that side.
 
-    The engine emits `['ctor', '<ExceptionType>']` for exactly this: it could build the object on
-    the before side and could not on the after side, so there is no method behaviour to compare.
+    The engine emits `['ctor', '<ExceptionType>']` for exactly this: one side could build the
+    object and the other could not, so there is no method behaviour to compare.
+
+    This checked only the AFTER side until 2026-09-15, which missed the mirror image entirely.
+    Found on a real hunt across six libraries: dateutil `bfa44c77` removed a required argument
+    from `_ymd.__init__`:
+
+        -    def __init__(self, tzstr, *args, **kwargs):
+        +    def __init__(self, *args, **kwargs):
+
+    so `_ymd()` could NOT be constructed before and could after. `_ymd.resolve_ymd` was then
+    reported as changed with the witness `ctor TypeError -> (None, None, None)`, which is a
+    statement about `__init__` wearing `resolve_ymd`'s name. It was the second of ten leads in
+    that run and cost a real investigation before the cause was obvious.
+
+    The direction never mattered. What matters is that one side never executed the method.
     """
     w = rec.get("witness") or {}
-    return str(w.get("after", "")).startswith("['ctor'")
+    return (str(w.get("after", "")).startswith("['ctor'")
+            or str(w.get("before", "")).startswith("['ctor'"))
 
 
 def collapse_constructor_findings(records):

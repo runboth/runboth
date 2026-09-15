@@ -53,9 +53,21 @@ def cmd_adjudicate(args):
             print(f"  {err}")
         return 0
     if args.json:
+        # The JSON contract stays RAW on purpose: it is the vendor-neutral surface and a
+        # consumer that wants the rollup can call collapse_constructor_findings itself, the
+        # way pr_report and the gate do. Collapsing here would silently change what every
+        # existing integration receives.
         print(json.dumps(records, indent=2))
         return 0
+    # The human surfaces all collapse, and until 2026-09-15 this one did not, so the CLI
+    # printed one intended constructor change as N separate method findings while the gate
+    # and the PR report printed it as one. Two surfaces disagreeing about the same commit is
+    # worse than either answer.
+    from adjudicate import collapse_constructor_findings
+    records, _ctor_rollup = collapse_constructor_findings(records)
     piles = {"no_change": [], "changed": [], "abstained": []}
+    for r in records:
+        piles[r["verdict"]].append(r)
     for r in records:
         piles[r["verdict"]].append(r)
     print(f"\n  {args.repo}  {args.base}..{args.head}   budget {args.budget}\n")

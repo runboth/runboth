@@ -44,6 +44,37 @@ FIX = re.compile(
     re.I)
 ISSUE = re.compile(r"#\d{2,6}|\bGH-\d+|\bissue\s*\d+", re.I)
 
+# A SUSPECT THAT ANNOUNCES ITSELF IS NOT A SILENT REGRESSION. The whole claim of this
+# script is "this commit changed behaviour, the project shipped it, nobody noticed until a
+# later fix". A commit whose own message says it is fixing, reverting or bugfixing is
+# stating that it means to change behaviour, so detecting the change proves nothing.
+#
+# MEASURED 2026-09-14 on the first real run, four leads across three repositories, none
+# reportable and three of them caught by exactly this:
+#   werkzeug  Rule._parse_rule     suspect "Bugfix rewrite the rule parsing"
+#   dateutil  _tzparser.parse      suspect "Revert b15f38a"
+#   jsonschema is_date             suspect "fix: Python 3.11 date.fromisoformat() ..."
+# In the jsonschema case the tool was right that behaviour changed, and the change was the
+# author deliberately re-narrowing a validator after Python 3.11 widened fromisoformat.
+# A hunt that surfaces that as a suspected regression is wasting the reader's attention,
+# which is the only thing this tool is actually spending.
+DECLARED = re.compile(
+    r"\b(fix|fixes|fixed|fixing|bugfix|revert|reverts|reverted|"
+    r"correct|corrects|workaround|hotfix)\b", re.I)
+
+# ...EXCEPT WHEN THE PROJECT ITSELF SAYS REGRESSION. Fixes introduce regressions constantly,
+# so "the suspect called itself a fix" cannot be a veto.
+#
+# This rule exists because the filter above was written on four noisy leads and would have
+# thrown away the only real one in the same run. Python-Markdown:
+#   suspect f925349 2026-01-21  "More HTML fixes"          <- DECLARED matches "fixes"
+#   fix     c438647 2026-02-02  "Fix regression of special comments"  Fixes #1590, +26 tests
+# `git log -S` confirms f925349 introduced the exact line c438647 replaced. A filter built on
+# the noise would have suppressed the signal, which is the ordinary way a heuristic tuned on
+# failures goes wrong. When the LATER commit uses the word regression, that is the project
+# stating the earlier change was unintended, and it outranks anything the earlier message said.
+REGRESSION = re.compile(r"\bregress(ion|ions|ed)?\b", re.I)
+
 
 def git(repo, *a, timeout=120):
     try:
@@ -232,7 +263,7 @@ def main():
     print(f"{repo.name}: {len(fixes)} fix commits in the last {a.scan}", flush=True)
 
     leads, checked = [], 0
-    timed_out = empty = 0
+    timed_out = empty = declared = 0
     for fix_sha, fix_subject in fixes:
         if checked >= a.max:
             break
@@ -243,6 +274,12 @@ def main():
             for short in shorts[:2]:
                 suspect = previous_change(repo, fix_sha, path, short)
                 if not suspect:
+                    continue
+                s_msg = (git(repo, "log", "-1", "--format=%s%n%b", suspect) or "")
+                fix_msg = (git(repo, "log", "-1", "--format=%s%n%b", fix_sha) or "")
+                confirmed = bool(REGRESSION.search(fix_msg))
+                if DECLARED.search(s_msg) and not confirmed:
+                    declared += 1
                     continue
                 sbase = (git(repo, "rev-parse", f"{suspect}^") or "").strip()
                 if not sbase:
@@ -267,8 +304,19 @@ def main():
                           f"{path}::{short}  NO VERDICT: adjudicator returned no records",
                           flush=True)
                     continue
+                # A CONSTRUCTOR ARTIFACT IS NOT A LEAD. When one side cannot build the object,
+                # the method never ran there, so the witness is a statement about __init__
+                # wearing the method's name. Two of the ten leads in the first real run were
+                # this: dateutil `_ymd.resolve_ymd` and werkzeug `Rule._parse_rule`, both
+                # costing a real investigation before the cause was visible.
+                def _ctor_artifact(r):
+                    w = r.get("witness") or {}
+                    return (str(w.get("before", "")).startswith("['ctor'")
+                            or str(w.get("after", "")).startswith("['ctor'"))
+
                 hit = [r for r in recs
                        if r["verdict"] == "changed" and r.get("witness")
+                       and not _ctor_artifact(r)
                        and r["function"].endswith(f"::{short}") and r["function"].startswith(path)]
                 flag = "  <<< LEAD" if hit else ""
                 print(f"  fix {fix_sha[:9]} -> suspect {suspect[:9]} {el:6.1f}s "
@@ -287,7 +335,9 @@ def main():
     # The denominator that matters is what actually got a verdict, not what was attempted.
     verdicts = checked - timed_out - empty
     print(f"\n{checked} suspects attempted: {verdicts} got a verdict, {timed_out} timed out, "
-          f"{empty} returned nothing. {len(leads)} leads.\n")
+          f"{empty} returned nothing. {len(leads)} leads.")
+    print(f"  {declared} suspect(s) skipped before adjudication: the commit message declares a "
+          f"fix or a revert, so a behaviour change there is intended, not a regression.\n")
     if timed_out:
         print(f"  {timed_out} of {checked} produced NO verdict at --timeout {a.timeout}s. "
               f"Those are unchecked, not clean.\n")
